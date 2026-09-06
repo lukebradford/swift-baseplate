@@ -1,0 +1,21 @@
+## Swift Package Manager
+.build/
+.swiftpm/
+Package.resolved
+
+## Xcode
+*.xcodeproj/xcuserdata/
+*.xcworkspace/xcuserdata/
+DerivedData/
+*.xcuserstate
+*.xcscmblueprint
+
+## DocC / docs build output
+docs/.build/
+*.doccarchive
+
+## macOS
+.DS_Store
+
+## Misc
+*.log

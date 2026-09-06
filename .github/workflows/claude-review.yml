@@ -1,0 +1,56 @@
+name: Claude PR Review
+
+# Automated agent review of every pull request. Claude reviews the diff against Baseplate's
+# Definition of Done and hard invariants (see AGENTS.md) and leaves inline comments.
+#
+# SETUP (one-time, by the repo owner):
+#   1. Create an Anthropic API key and add it as a repo secret named ANTHROPIC_API_KEY
+#      (Settings → Secrets and variables → Actions → New repository secret).
+#   2. That's it. Without the secret this workflow is skipped, not failed.
+#
+# This does not replace human/owner approval — it's a first-pass reviewer that catches
+# invariant violations, missing docs/tests, and non-determinism before a person looks.
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+jobs:
+  review:
+    name: Claude review
+    runs-on: ubuntu-latest
+    if: ${{ !github.event.pull_request.draft }}
+    steps:
+      - name: Check for API key
+        id: guard
+        run: |
+          if [ -n "${{ secrets.ANTHROPIC_API_KEY }}" ]; then
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::ANTHROPIC_API_KEY not set — skipping Claude review."
+          fi
+      - uses: actions/checkout@v4
+        if: steps.guard.outputs.enabled == 'true'
+      - name: Review with Claude
+        if: steps.guard.outputs.enabled == 'true'
+        uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          prompt: |
+            You are the Baseplate maintainer reviewing this pull request. Read AGENTS.md and
+            CONTRIBUTING.md in the repo root first, then review the diff strictly against:
+              • The HARD INVARIANTS (dependency-free core; Swift 6 + Sendable-correct;
+                deterministic, injected tests; one public type per small file; gated
+                platform code; no breaking change without a deprecation cycle).
+              • The Definition of Done (complete DocC docstring WITH a compiling example on
+                every new/changed public symbol; happy-path AND edge-case tests; CHANGELOG
+                updated; no new dependency or cross-module edge).
+            Leave concise, specific inline comments. Prefer a small number of high-signal
+            findings over nitpicks. If everything passes, say so plainly. Do not approve or
+            merge — a human owner does that.

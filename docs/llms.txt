@@ -1,0 +1,236 @@
+# Baseplate
+
+> A small, dependency-light, agent-native Swift toolkit for indie iOS apps. Swift 6.2, iOS 17+/macOS 14+, MIT.
+> This is a machine-readable index of the public API; full docs live in each symbol's DocC docstring.
+> Repo: https://github.com/lukebradford/swift-baseplate
+
+## BaseplateCore
+_Foundation-only, portable: keychain, typed defaults, seeded RNG, humanization, ordering._
+
+### struct CodableDefaultsStore<Value: Codable & Sendable>: @unchecked Sendable
+- let key: String
+- let schemaVersion: Int
+- let maxAge: TimeInterval?
+- init( key: String, schemaVersion: Int, maxAge: TimeInterval?
+- func save(_ value: Value)
+- func load() -> Value?
+- func clear()
+
+### struct DailySeed: Sendable
+- init( now: @escaping @Sendable () -> Date
+- var dayIndex: Int
+- func dayIndex(for date: Date) -> Int
+- var seed: UInt64
+- func isNewDayAvailable(since lastRun: Date) -> Bool
+
+### enum Humanize
+- static func relativeDate( _ date: Date, relativeTo reference: Date, locale: Locale
+- static func byteCount( _ bytes: Int64, style: ByteCountFormatStyle.Style
+- static func duration( _ seconds: TimeInterval, allowed: Set<Duration.UnitsFormatStyle.Unit>
+- static func ordinal(_ value: Int, locale: Locale
+
+### enum KeychainAccessibility: Sendable, Equatable
+
+### enum KeychainError: Error, Equatable, Sendable
+
+### struct KeychainItem<Value>: Sendable
+- let service: String
+- let account: String
+- let accessibility: KeychainAccessibility
+- func get() throws -> Value?
+- func set(_ value: Value) throws
+- func delete() throws
+- init( service: String, account: String, accessibility: KeychainAccessibility
+- static func codable( service: String, account: String, accessibility: KeychainAccessibility
+
+### enum NameOrdering
+- static func compare(_ a: String, _ b: String) -> ComparisonResult
+- static func areInIncreasingOrder(_ a: String, _ b: String) -> Bool
+- static func sortedByName(_ names: some Sequence<String>) -> [String]
+- static func sortedByName<Element>( _ elements: some Sequence<Element>, by name: (Element) -> String ) -> [Element]
+
+### struct SeededRandomNumberGenerator: RandomNumberGenerator, Sendable
+- private(set) var state: UInt64
+- init(seed: UInt64)
+- init(state: UInt64)
+- mutating func next() -> UInt64
+
+### struct SplitMix64Generator: RandomNumberGenerator, Sendable
+- private(set) var state: UInt64
+- init(seed: UInt64)
+- init(state: UInt64)
+- mutating func next() -> UInt64
+
+### struct UserDefault<Value: Sendable>: @unchecked Sendable
+- let key: String
+- let defaultValue: Value
+- var wrappedValue: Value
+- var projectedValue: UserDefault<Value>
+- init(wrappedValue defaultValue: Value, _ key: String, store: UserDefaults
+- init( wrappedValue defaultValue: Value, _ key: String, store: UserDefaults
+- func reset()
+
+## BaseplateUI
+_SwiftUI ergonomics & design-system primitives (UIKit gated)._
+
+### struct ColorComponents: Codable, Hashable, Sendable
+- var red: Double
+- var green: Double
+- var blue: Double
+- var alpha: Double
+- init(red: Double, green: Double, blue: Double, alpha: Double
+- init?(hex: String)
+- var hexString: String
+- var color: Color
+- init(resolving color: Color, in environment: EnvironmentValues
+
+### class Haptics
+- init(preference: HapticsPreference
+- var isEnabled: Bool
+- func impact(_ style: UIImpactFeedbackGenerator.FeedbackStyle
+- func notify(_ type: UINotificationFeedbackGenerator.FeedbackType)
+- func selectionChanged()
+- func setEnabled(_ enabled: Bool)
+
+### struct HapticsPreference: @unchecked Sendable
+- init(defaults: UserDefaults
+- var isEnabled: Bool
+- func setEnabled(_ enabled: Bool)
+
+### struct ShareSheet: UIViewControllerRepresentable
+- let items: [Any]
+- var onComplete: (@MainActor (_ activity: String, _ completed: Bool) -> Void)?
+- init( items: [Any], onComplete: (@MainActor (_ activity: String, _ completed: Bool) -> Void)?
+- func makeUIViewController(context: Context) -> UIActivityViewController
+- func updateUIViewController( _ uiViewController: UIActivityViewController, context: Context )
+
+### struct ShareableImage: Identifiable
+- let id
+- let image: UIImage
+- init(image: UIImage)
+
+## BaseplateLifecycle
+_Indie app-lifecycle chores: review prompts, version gates, feedback, cross-promotion._
+
+### struct AppStoreCampaignLink: Sendable, Equatable
+- var providerToken: String?
+- init(providerToken: String?
+- var attributionConfigured: Bool
+- func url(appStoreID: String, campaignToken: String?
+- func url(for app: PortfolioApp) -> URL
+- static func sanitizedCampaignToken(_ token: String?) -> String
+
+### struct CrossPromoShelf: View
+- init(apps: [PortfolioApp], onOpen: @escaping (PortfolioApp) -> Void)
+- var body: some View
+
+### struct DiagnosticsReport: Sendable, Equatable
+- var appName: String
+- var appVersion: String
+- var buildNumber: String
+- var systemName: String
+- var systemVersion: String
+- var deviceModel: String
+- var localeIdentifier: String
+- init( appName: String, appVersion: String, buildNumber: String, systemName: String, systemVersion: String, deviceModel: String,
+- var emailSubject: String
+- var emailBody: String
+- static func current( bundle: Bundle
+
+### struct FirstLaunch: @unchecked Sendable
+- init( defaults: UserDefaults
+- var isFirstLaunch: Bool
+- func markLaunched()
+- func consume() -> Bool
+
+### struct MailComposeView: UIViewControllerRepresentable
+- let recipient: String
+- let subject: String
+- let body: String
+- let onFinish: () -> Void
+- static var canSendMail: Bool
+- init( recipient: String, subject: String, body: String, onFinish: @escaping () -> Void )
+- func makeUIViewController(context: Context) -> MFMailComposeViewController
+- func updateUIViewController( _ controller: MFMailComposeViewController, context: Context )
+- func makeCoordinator() -> Coordinator
+- func mailComposeController( _ controller: MFMailComposeViewController, didFinishWith result: MFMailComposeResult, error: Error? )
+
+### struct PortfolioApp: Identifiable, Sendable, Hashable
+- var name: String
+- var tagline: String
+- var appStoreID: String
+- var icon: Icon
+- var campaignToken: String?
+- var id: String
+- init( name: String, tagline: String, appStoreID: String, icon: Icon, campaignToken: String?
+- func excludingApp(withID id: String) -> [PortfolioApp]
+
+### struct ReviewPromptGate: @unchecked Sendable
+- let minimumEvents: Int
+- let minimumInterval: TimeInterval?
+- init( minimumEvents: Int
+- var meaningfulEventCount: Int
+- func recordMeaningfulEvent()
+- func shouldRequestReview(appVersion: String) -> Bool
+- func markRequested(appVersion: String)
+- static func shouldRequest( meaningfulEvents: Int, minimumEvents: Int, firstEventDate: Date?, now: Date, minimumInterval: TimeInterval?, lastRequestedVersion: String?,
+
+### struct ShowOnceFlag: @unchecked Sendable
+- let scope: Scope
+- let currentVersion: String
+- init( key: String, scope: Scope
+- var shouldShow: Bool
+- func markShown()
+- func reset()
+
+### struct VersionChange: @unchecked Sendable
+- let currentVersion: String
+- init( currentVersion: String, defaults: UserDefaults
+- var lastSeenVersion: String?
+- var transition: Transition
+- func commit()
+- static func classify(current: String, lastSeen: String?) -> Transition
+
+### struct WhatsNewGate: @unchecked Sendable
+- let currentVersion: String
+- let showOnFreshInstall: Bool
+- init( currentVersion: String, showOnFreshInstall: Bool
+- var shouldShowWhatsNew: Bool
+- func markShown()
+
+## BaseplateStoreKit
+_Testable StoreKit 2 entitlements for the no-backend indie._
+
+### struct EntitlementEngine: Sendable, Equatable
+- let productIDs: Set<String>
+- init(productIDs: Set<String>)
+- func evaluate(facts: [TransactionFact], now: Date) -> EntitlementState
+- func reconcile( live: [TransactionFact], cached: [TransactionFact], hasPurchaseHistory: Bool, now: Date ) -> [TransactionFact]
+
+### enum EntitlementState: String, Sendable, Equatable, Hashable, Codable
+- var isActive: Bool
+
+### class EntitlementStore
+- private(set) var facts: [TransactionFact]
+- private(set) var products: [Product]
+- init( productIDs: Set<String>, defaults: UserDefaults
+- var state: EntitlementState
+- var hasEntitlement: Bool
+- func isEntitled(_ productID: String) -> Bool
+- func start() async
+- func loadProductInfo() async
+- func refresh() async -> EntitlementState
+- func restore() async -> EntitlementState
+- func observeUpdates()
+
+### enum Grandfather
+- static func isGrandfathered( originalAppVersion: String, boughtBefore cutoff: String ) -> Bool
+
+### struct TransactionFact: Sendable, Equatable, Hashable, Codable
+- let productID: String
+- let isRevoked: Bool
+- let expirationDate: Date?
+- init(productID: String, isRevoked: Bool
+- func isActive(at now: Date) -> Bool
+- func isExpired(at now: Date) -> Bool
+
