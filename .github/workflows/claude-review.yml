@@ -35,7 +35,7 @@ jobs:
             echo "enabled=false" >> "$GITHUB_OUTPUT"
             echo "::notice::ANTHROPIC_API_KEY not set — skipping Claude review."
           fi
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         if: steps.guard.outputs.enabled == 'true'
       - name: Review with Claude
         if: steps.guard.outputs.enabled == 'true'
