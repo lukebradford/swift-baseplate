@@ -4,9 +4,12 @@ name: Claude PR Review
 # Definition of Done and hard invariants (see AGENTS.md) and leaves inline comments.
 #
 # SETUP (one-time, by the repo owner):
-#   1. Create an Anthropic API key and add it as a repo secret named ANTHROPIC_API_KEY
-#      (Settings → Secrets and variables → Actions → New repository secret).
-#   2. That's it. Without the secret this workflow is skipped, not failed.
+#   1. Install the Claude GitHub App on this repo (recommended): https://github.com/apps/claude
+#      (or run `/install-github-app` in a Claude Code terminal). This lets Claude authenticate
+#      and post as itself.
+#   2. Add an Anthropic API key as a repo secret named ANTHROPIC_API_KEY (Settings → Secrets and
+#      variables → Actions). Prefer `gh secret set ANTHROPIC_API_KEY -R <owner>/<repo>` so the key
+#      is never echoed. Without the secret this workflow is skipped, not failed.
 #
 # This does not replace human/owner approval — it's a first-pass reviewer that catches
 # invariant violations, missing docs/tests, and non-determinism before a person looks.
@@ -37,11 +40,17 @@ jobs:
           fi
       - uses: actions/checkout@v5
         if: steps.guard.outputs.enabled == 'true'
+        with:
+          fetch-depth: 0  # full history so Claude can diff against the base branch
       - name: Review with Claude
         if: steps.guard.outputs.enabled == 'true'
         uses: anthropics/claude-code-action@v1
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          # Grant the tools Claude needs to post inline comments and read PR context. Without
+          # this it can only leave a single summary comment.
+          claude_args: '--allowedTools "mcp__github_inline_comment__create_inline_comment,Bash(gh pr comment:*),Bash(gh pr diff:*),Bash(gh pr view:*)"'
           prompt: |
             You are the Baseplate maintainer reviewing this pull request. Read AGENTS.md and
             CONTRIBUTING.md in the repo root first, then review the diff strictly against:
