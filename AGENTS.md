@@ -113,8 +113,9 @@ Adding a new upward or sideways edge requires an ADR (see CONTRIBUTING.md § Dec
 - Branch: `feat/<module>-<symbol>`, `fix/<module>-<what>`, `docs/…`, `chore/…`.
 - One logical change per PR. Keep diffs reviewable.
 - Commit subject: `<module>: imperative summary` (≤ 72 chars), e.g. `Core: add KeychainItem<Value>`.
-- Fill in `.github/PULL_REQUEST_TEMPLATE.md`. The maintainer (currently a Claude reviewer +
-  the owner) reviews against the Definition of Done and the invariants.
+- Fill in `.github/PULL_REQUEST_TEMPLATE.md`. The maintainer is a locally-run Claude Code session
+  (the "Continue" protocol in `CLAUDE.md`) that reviews against the Definition of Done and the
+  invariants; the owner makes the final call on anything consequential.
 
 ## Where things go
 

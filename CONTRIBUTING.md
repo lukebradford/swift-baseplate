@@ -104,9 +104,11 @@ action with no record teaches the next agent nothing.
 ## Review
 
 PRs are reviewed against the [Definition of Done](AGENTS.md#definition-of-done-a-change-is-not-done-until-all-of-these-hold)
-and the hard invariants. An automated Claude reviewer (`.github/workflows/claude-review.yml`)
-comments on each PR; a human owner (or a maintainer agent) gives the final approve/merge.
-Be responsive to review comments and keep the branch rebased on `main`.
+and the hard invariants. The maintainer is a Claude Code session the owner runs locally (the
+"Continue" protocol — see `CLAUDE.md`): it checks out your PR, runs the full gate suite, and leaves
+specific inline review comments, then approves or requests changes. The owner gives the final
+merge on anything consequential (a breaking change, a new dependency, a new public utility). Be
+responsive to review comments and keep the branch rebased on `main`.
 
 ## Code of conduct
 
