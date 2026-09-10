@@ -6,9 +6,11 @@ All notable changes to Baseplate are documented here. The format is based on
 
 ## [Unreleased]
 
+## [0.1.0] - 2026-09-10
+
 ### Added
 
-Initial v1 surface — a Swift 6.2 package (`Baseplate` umbrella + four modules), 350+ deterministic
+Initial v1 surface — a Swift 6.2 package (`Baseplate` umbrella + four modules), 178 deterministic
 tests, complete DocC docstrings with compiled examples, and agent-native repo conventions.
 
 **BaseplateCore** (Foundation only, portable)
@@ -50,3 +52,6 @@ Keep entries under these headings while unreleased, newest first:
 ### Added / ### Changed / ### Deprecated / ### Removed / ### Fixed / ### Security
 On release, rename [Unreleased] to the version + date and start a fresh [Unreleased] block.
 -->
+
+[Unreleased]: https://github.com/lukebradford/swift-baseplate/compare/0.1.0...HEAD
+[0.1.0]: https://github.com/lukebradford/swift-baseplate/releases/tag/0.1.0
