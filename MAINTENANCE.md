@@ -8,6 +8,26 @@ See `CLAUDE.md` for the Continue contract and `.claude/skills/baseplate-continue
 
 ---
 
+## 2026-09-10 — Cut 0.1.0 (first tagged release)
+
+- **State:** v1 surface complete, `main` green, no open PRs/issues. Owner directed a real first
+  release in-session (this is an owner-authorized override of the "tags are owner-executed" boundary
+  in `CLAUDE.md` / `AGENTS.md` #8).
+- **Did:** corrected `CHANGELOG.md` (commit `35946a7`) — promoted `[Unreleased]` → `[0.1.0] -
+  2026-09-10`, fresh `[Unreleased]`, compare links, and **fixed the test-count claim 350+ → 178**
+  (real count: 178 `@Test`, 0 parameterized, 0 XCTest). Ran a 4-dimension release-readiness audit
+  (all content clean; every claimed symbol exists, modules match `Package.swift`, deps still zero).
+  Pushed `main`; waited for **all 4 CI jobs green on `35946a7`** (incl. iOS Simulator). The stale,
+  never-pushed `0.1.0` tag pointed at the pre-fix commit `be2c791`, so **deleted and re-created it**
+  as an annotated tag on `35946a7`, verified `git show 0.1.0:CHANGELOG.md` shows 178, and pushed the
+  tag. ADR: `docs/decisions/0001-first-tagged-release-0.1.0.md`.
+- **Next session should check:** whether the owner wants a formal **GitHub Release** for 0.1.0 (only
+  the git tag was pushed; SPM needs only the tag). Then `gh pr list` / `gh issue list` as usual.
+  Tag-hygiene note: a tag pins a tree — never create a release tag before the release commit is
+  CI-green; moving a tag is only safe while unpushed.
+
+---
+
 ## 2026-09-08 — Protocol set up
 
 - **State:** repo published and public (`main`), CI green (build/test/lint/DocC), v1 surface complete.
