@@ -20,11 +20,13 @@ See `CLAUDE.md` for the Continue contract and `.claude/skills/baseplate-continue
   Pushed `main`; waited for **all 4 CI jobs green on `35946a7`** (incl. iOS Simulator). The stale,
   never-pushed `0.1.0` tag pointed at the pre-fix commit `be2c791`, so **deleted and re-created it**
   as an annotated tag on `35946a7`, verified `git show 0.1.0:CHANGELOG.md` shows 178, and pushed the
-  tag. ADR: `docs/decisions/0001-first-tagged-release-0.1.0.md`.
-- **Next session should check:** whether the owner wants a formal **GitHub Release** for 0.1.0 (only
-  the git tag was pushed; SPM needs only the tag). Then `gh pr list` / `gh issue list` as usual.
-  Tag-hygiene note: a tag pins a tree — never create a release tag before the release commit is
-  CI-green; moving a tag is only safe while unpushed.
+  tag. ADR: `docs/decisions/0001-first-tagged-release-0.1.0.md`. Then, on owner instruction,
+  **published a formal GitHub Release** for `0.1.0` (title "0.1.0 — first tagged release"; notes
+  drawn from the `[0.1.0]` CHANGELOG section + install/requirements/status; not a draft, not a
+  prerelease) — <https://github.com/lukebradford/swift-baseplate/releases/tag/0.1.0>.
+- **Next session should check:** `gh pr list` / `gh issue list` as usual — 0.1.0 is fully shipped
+  (tag + Release). Tag-hygiene note for future releases: a tag pins a tree — never create a release
+  tag before the release commit is CI-green; moving a tag is only safe while unpushed.
 
 ---
 
